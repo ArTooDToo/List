@@ -15,8 +15,8 @@ public class MainActivity extends ListActivity {
     private ItemAdapter m_adapter;
     private Button StartB, StopB;
     private int ostatni = 1;
-    Handler han = new Handler();
-
+    private Handler han = new Handler();
+    private boolean stop = false;
 
     Runnable runnab = new Runnable() {
         @Override
@@ -61,7 +61,6 @@ public class MainActivity extends ListActivity {
             finally {
                 upDate();
                 han.postDelayed(runnab, 1000);
-
             }
         }
     };
@@ -75,21 +74,27 @@ public class MainActivity extends ListActivity {
 
         StartB = (Button)findViewById(R.id.start_button);
         StopB = (Button)findViewById(R.id.stop_button);
-
         StartB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 han.post(runnab);
+                //zabezpiecznie
+                stop = false;
             }
         });
 
         StopB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                han.removeCallbacks(runnab);
-                m_parts.removeAll(m_parts);
-                upDate();
-                ostatni = 1;
+                if(stop == false){
+                    han.removeCallbacks(runnab);
+                    stop = true;
+                }else {
+                    m_parts.removeAll(m_parts);
+                    upDate();
+                    ostatni = 1;
+                    stop = false;
+                }
             }
         });
 
